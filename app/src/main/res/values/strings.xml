@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">GramPOReceive</string>
+    <string name="loginForm">Login Form</string>
+    <string name="enter_username_text">Please enter username</string>
+    <string name="login_button">Login</string>
+    <string name="username_label">Username:</string>
+    <string name="password_label">Password:</string>
+    <string name="enter_password_text">Please enter password</string>
+    <string name="enter_purchase_order_number_text">Purchase Order Number</string>
+    <string name="get_purchase_orders_button">New Purchase Order</string>
+    <string name="continue_purchase_order_button">Continue Purchase Order</string>
+    <string name="sequence_number_header">Seq No</string>
+    <string name="stockcode_header">STOCKCODE</string>
+    <string name="description_header">DESCRIPTION</string>
+    <string name="qty_required_header">Qty Required</string>
+    <string name="qty_received_header">Qty Received</string>
+    <string name="save_order_button">SAVE</string>
+    <string name="upload_order_button">UPLOAD</string>
+</resources>
