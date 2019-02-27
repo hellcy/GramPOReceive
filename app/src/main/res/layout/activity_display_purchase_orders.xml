@@ -34,13 +34,37 @@
                 <TextView
                     android:id="@+id/OrderNumberView"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </TableRow>
+            <TableRow
+                android:id="@+id/table_layout_row_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                >
+
+                <TextView
+                    android:id="@+id/AccNoView"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     />
+            </TableRow>
+            <TableRow
+                android:id="@+id/table_layout_row_3"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                >
+
+                <TextView
+                    android:id="@+id/OrderDateView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                />
+
 
             </TableRow>
             <!-- Add common columns in the table row. -->
             <TableRow
-                android:id="@+id/table_layout_row_2"
+                android:id="@+id/table_layout_row_4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@+id/table_layout_table"

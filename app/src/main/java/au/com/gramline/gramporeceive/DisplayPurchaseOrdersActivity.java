@@ -2,6 +2,7 @@ package au.com.gramline.gramporeceive;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
+    public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     private Context context = null;
     APIInterface apiInterface;
@@ -53,12 +55,18 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         message = intent.getStringExtra(EnterPurchaseOrderNumberActivity.EXTRA_MESSAGE_THREE);
         resume = intent.getStringExtra(EnterPurchaseOrderNumberActivity.EXTRA_MESSAGE_TWO);
         context = getApplicationContext();
+        if (message.isEmpty())
+        {
+            backToEnterPurchaseOrderNumberActivity();
+            finish();
+            return;
+        }
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
         // Capture the layout's TextView and set the string as its text
         TextView orderNumber = findViewById(R.id.OrderNumberView);
-        orderNumber.setText("Order Number: " + message);
+        orderNumber.setText(getString(R.string.order_number_label, message));
 
         if (resume != null)
         {
@@ -83,6 +91,9 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
                     }
 
                 }
+                SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+                String username = prefs.getString("username", null);
+                savedOrder.USERNAME = username;
                 Toast.makeText(getApplicationContext(), "Data Saved \n", Toast.LENGTH_SHORT).show();
                 writeFileExternalStorage(savedOrder);
             }
@@ -112,7 +123,7 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
     public void writeFileExternalStorage(ReceivedOrderList receivedOrderList) {
 
         //Text of the Document
-        String DirName = "orderInfo.txt";
+        String DirName = "order " + message + ".txt";
 
         //Checking the availability state of the External Storage.
         String state = Environment.getExternalStorageState();
@@ -144,12 +155,17 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
 
     public ReceivedOrderList getOrderFromFile(ReceivedOrderList receivedOrderList)
     {
-        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/GramPOReceive", "orderInfo.txt");
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/GramPOReceive", "order " + message + ".txt");
         try {
             receivedOrderList = mapper.readValue(file, ReceivedOrderList.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        TextView accNo = findViewById(R.id.AccNoView);
+        accNo.setText(getString(R.string.account_number_label, String.valueOf(receivedOrderList.results.get(0).ACCNO)));
+        TextView orderDate = findViewById(R.id.OrderDateView);
+        orderDate.setText(getString(R.string.order_date_label, receivedOrderList.results.get(0).ORDERDATE));
 
         for (ReceivedOrderList.ReceivedOrder receivedOrder : receivedOrderList.results) {
             // Create a new table row.
@@ -208,47 +224,61 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
 
                 PurchaseOrderList resource = response.body();
                 List<PurchaseOrderList.PurchaseOrder> dataList = resource.results;
+                if (dataList.size() == 0)
+                {
+                    backToEnterPurchaseOrderNumberActivity();
+                }
+                else
+                {
+                    for (PurchaseOrderList.PurchaseOrder purchaseOrder : dataList) {
+                        // Create a new table row.
+                        TableRow tableRow = new TableRow(context);
+                        ReceivedOrderList.ReceivedOrder orderItem = new ReceivedOrderList.ReceivedOrder();
+                        // Set new table row layout parameters.
+                        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
 
-                for (PurchaseOrderList.PurchaseOrder purchaseOrder : dataList) {
-                    // Create a new table row.
-                    TableRow tableRow = new TableRow(context);
-                    ReceivedOrderList.ReceivedOrder orderItem = new ReceivedOrderList.ReceivedOrder();
-                    // Set new table row layout parameters.
-                    TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
+                        // Add a TextView in the first column.
+                        TextView seqNo = new TextView(context);
+                        seqNo.setText(String.valueOf(purchaseOrder.SEQNO));
+                        tableRow.addView(seqNo, 0,layoutParams);
+                        orderItem.SEQNO = purchaseOrder.SEQNO;
 
-                    // Add a TextView in the first column.
-                    TextView seqNo = new TextView(context);
-                    seqNo.setText(String.valueOf(purchaseOrder.SEQNO));
-                    tableRow.addView(seqNo, 0,layoutParams);
-                    orderItem.SEQNO = purchaseOrder.SEQNO;
+                        // Add a TextView in the second column.
+                        TextView stockCode = new TextView(context);
+                        stockCode.setText(String.valueOf(purchaseOrder.STOCKCODE));
+                        tableRow.addView(stockCode, 1,new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
+                        orderItem.STOCKCODE = purchaseOrder.STOCKCODE;
 
-                    // Add a TextView in the second column.
-                    TextView stockCode = new TextView(context);
-                    stockCode.setText(String.valueOf(purchaseOrder.STOCKCODE));
-                    tableRow.addView(stockCode, 1,new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
-                    orderItem.STOCKCODE = purchaseOrder.STOCKCODE;
+                        // Add a TextView in the third column.
+                        TextView description = new TextView(context);
+                        description.setText(purchaseOrder.DESCRIPTION);
+                        tableRow.addView(description, 2, new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4));
+                        orderItem.DESCRIPTION = purchaseOrder.DESCRIPTION;
 
-                    // Add a TextView in the third column.
-                    TextView description = new TextView(context);
-                    description.setText(purchaseOrder.DESCRIPTION);
-                    tableRow.addView(description, 2, new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4));
-                    orderItem.DESCRIPTION = purchaseOrder.DESCRIPTION;
+                        // Add a TextView in the fourth column.
+                        TextView qtyReqd = new TextView(context);
+                        qtyReqd.setText(String.valueOf(purchaseOrder.ORD_QUANT));
+                        tableRow.addView(qtyReqd, 3, layoutParams);
+                        orderItem.ORD_QUANT = purchaseOrder.ORD_QUANT.intValue();
 
-                    // Add a TextView in the fourth column.
-                    TextView qtyReqd = new TextView(context);
-                    qtyReqd.setText(String.valueOf(purchaseOrder.ORD_QUANT));
-                    tableRow.addView(qtyReqd, 3, layoutParams);
-                    orderItem.ORD_QUANT = purchaseOrder.ORD_QUANT.intValue();
+                        // Add a EditText in the fifth column.
+                        EditText qtyCollected = new EditText(context);
+                        tableRow.addView(qtyCollected, 4, layoutParams);
+                        qtyCollected.setTag("qtyReceived_" + size);
+                        qtyCollected.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-                    // Add a EditText in the fifth column.
-                    EditText qtyCollected = new EditText(context);
-                    tableRow.addView(qtyCollected, 4, layoutParams);
-                    qtyCollected.setTag("qtyReceived_" + size);
-                    qtyCollected.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        orderItem.ACCNO = purchaseOrder.ACCNO;
+                        orderItem.ORDERDATE = purchaseOrder.ORDERDATE;
+                        orderItem.HDR_SEQNO = purchaseOrder.HDR_SEQNO;
 
-                    size++;
-                    savedOrder.results.add(orderItem);
-                    tableLayout.addView(tableRow);
+                        size++;
+                        savedOrder.results.add(orderItem);
+                        tableLayout.addView(tableRow);
+                    }
+                    TextView accNo = findViewById(R.id.AccNoView);
+                    accNo.setText(getString(R.string.account_number_label, String.valueOf(savedOrder.results.get(0).ACCNO)));
+                    TextView orderDate = findViewById(R.id.OrderDateView);
+                    orderDate.setText(getString(R.string.order_date_label, savedOrder.results.get(0).ORDERDATE));
                 }
             }
             @Override
@@ -256,5 +286,12 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
                 call.cancel();
             }
         });
+    }
+
+    public void backToEnterPurchaseOrderNumberActivity ()
+    {
+        Toast.makeText(getApplicationContext(), "Purchase Order doesn't exist! \n", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(context, EnterPurchaseOrderNumberActivity.class);
+        startActivity(intent);
     }
 }

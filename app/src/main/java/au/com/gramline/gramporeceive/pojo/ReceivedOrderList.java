@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReceivedOrderList {
+    @SerializedName("USERNAME")
+    public String USERNAME;
     @SerializedName("results")
     public List<ReceivedOrder> results = new ArrayList<>();
 
@@ -26,7 +28,7 @@ public class ReceivedOrderList {
         @SerializedName("QtyReceived")
         public Integer QTYReceived;
         @SerializedName("ORDERDATE")
-        public Date ORDERDATE;
+        public String ORDERDATE;
 
     }
 }

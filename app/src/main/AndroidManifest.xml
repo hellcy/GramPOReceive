@@ -12,8 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".DisplayPurchaseOrdersActivity"></activity>
-        <activity android:name=".EnterPurchaseOrderNumberActivity" />
+        <activity android:name=".DisplayPurchaseOrdersActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="au.com.gramline.gramporeceive.DisplayPurchaseOrdersActivity" />
+        </activity>
+        <activity android:name=".EnterPurchaseOrderNumberActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="au.com.gramline.gramporeceive.EnterPurchaseOrderNumberActivity" />
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
