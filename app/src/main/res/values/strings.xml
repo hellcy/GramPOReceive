@@ -1,11 +1,8 @@
 <resources>
     <string name="app_name">GramPOReceive</string>
-    <string name="loginForm">Login Form</string>
-    <string name="enter_username_text">Please enter username</string>
+    <string name="enter_username_text">Username</string>
     <string name="login_button">Login</string>
-    <string name="username_label">Username:</string>
-    <string name="password_label">Password:</string>
-    <string name="enter_password_text">Please enter password</string>
+    <string name="enter_password_text">Password</string>
     <string name="enter_purchase_order_number_text">Purchase Order Number</string>
     <string name="get_purchase_orders_button">New Purchase Order</string>
     <string name="continue_purchase_order_button">Continue Purchase Order</string>
@@ -19,5 +16,5 @@
     <string name="order_number_label">Order Number: %1$s </string>
     <string name="account_number_label">Account Number: %1$s </string>
     <string name="order_date_label">Order Date: %1$s </string>
-
+    <string name="you_are_logged_in_as">You are logged in as: </string>
 </resources>

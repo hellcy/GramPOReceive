@@ -9,8 +9,10 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -94,7 +96,11 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
                 SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
                 String username = prefs.getString("username", null);
                 savedOrder.USERNAME = username;
-                Toast.makeText(getApplicationContext(), "Data Saved \n", Toast.LENGTH_SHORT).show();
+                Toast toast = Toast.makeText(getApplicationContext(), "Data Saved \n", Toast.LENGTH_SHORT);
+                ViewGroup group = (ViewGroup) toast.getView();
+                TextView messageTextView = (TextView) group.getChildAt(0);
+                messageTextView.setTextSize(25);
+                toast.show();
                 writeFileExternalStorage(savedOrder);
             }
 
@@ -109,6 +115,7 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ReceivedOrderList> call, Response<ReceivedOrderList> response) {
                         Toast.makeText(getApplicationContext(), "File Uploaded \n", Toast.LENGTH_SHORT).show();
+
                     }
                     @Override
                     public void onFailure(Call<ReceivedOrderList> call, Throwable t) {
@@ -290,7 +297,11 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
 
     public void backToEnterPurchaseOrderNumberActivity ()
     {
-        Toast.makeText(getApplicationContext(), "Purchase Order doesn't exist! \n", Toast.LENGTH_SHORT).show();
+        Toast toast = Toast.makeText(getApplicationContext(), "Purchase Order doesn't exist! \n", Toast.LENGTH_SHORT);
+        ViewGroup group = (ViewGroup) toast.getView();
+        TextView messageTextView = (TextView) group.getChildAt(0);
+        messageTextView.setTextSize(25);
+        toast.show();
         Intent intent = new Intent(context, EnterPurchaseOrderNumberActivity.class);
         startActivity(intent);
     }

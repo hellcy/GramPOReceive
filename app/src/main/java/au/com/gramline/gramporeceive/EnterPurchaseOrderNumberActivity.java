@@ -26,7 +26,9 @@ public class EnterPurchaseOrderNumberActivity extends AppCompatActivity {
         TextView textView = findViewById(R.id.usernameView);
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         String username = prefs.getString("username", null);
-        textView.setText("You are logged in as: " + username);
+        textView.setText("You are logged in as: ");
+        TextView username2 = findViewById(R.id.usernameView2);
+        username2.setText(username);
     }
 
     /** Called when the user taps the get job order button */
