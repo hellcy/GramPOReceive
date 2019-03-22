@@ -1,5 +1,7 @@
 package au.com.gramline.gramporeceive;
 
+import java.util.List;
+
 import au.com.gramline.gramporeceive.pojo.PurchaseOrderList;
 import au.com.gramline.gramporeceive.pojo.ReceivedOrderList;
 import retrofit2.Call;
@@ -12,6 +14,10 @@ public interface APIInterface {
     // get the specific job order details
     @GET("/Scanner/api/PurchaseOrder/get?")
     Call<PurchaseOrderList> doGetPurchaseOrderList(@Query("HDR_SEQNO") String HDR_SEQNO);
+
+    // get account names
+    @GET("/Scanner/api/PurchaseOrder/get")
+    Call<List<String>> doGetAccountNameList();
 
     // create list of orders
     @POST("/Scanner/api/PurchaseOrder")

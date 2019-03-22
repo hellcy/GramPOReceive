@@ -25,6 +25,8 @@ public class ReceivedOrderList {
         public String DESCRIPTION;
         @SerializedName("ORD_QUANT")
         public Integer ORD_QUANT;
+        @SerializedName("SUP_QUANT")
+        public Integer SUP_QUANT;
         @SerializedName("QtyReceived")
         public Integer QTYReceived;
         @SerializedName("ORDERDATE")

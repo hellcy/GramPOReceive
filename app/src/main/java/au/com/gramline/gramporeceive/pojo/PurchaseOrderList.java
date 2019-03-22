@@ -22,6 +22,8 @@ public class PurchaseOrderList {
         public String DESCRIPTION;
         @SerializedName("ORD_QUANT")
         public Double ORD_QUANT;
+        @SerializedName("SUP_QUANT")
+        public Double SUP_QUANT;
         @SerializedName("SEQNO")
         public Integer SEQNO;
 

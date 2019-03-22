@@ -4,12 +4,14 @@
     <string name="login_button">Login</string>
     <string name="enter_password_text">Password</string>
     <string name="enter_purchase_order_number_text">Purchase Order Number</string>
+    <string name="enter_account_name_text">Account Name</string>
     <string name="get_purchase_orders_button">New Purchase Order</string>
     <string name="continue_purchase_order_button">Continue Purchase Order</string>
     <string name="sequence_number_header">Seq No</string>
     <string name="stockcode_header">STOCKCODE</string>
     <string name="description_header">DESCRIPTION</string>
     <string name="qty_required_header">Qty Required</string>
+    <string name="qty_supplied_header">Qty Supplied</string>
     <string name="qty_received_header">Qty Received</string>
     <string name="save_order_button">SAVE</string>
     <string name="upload_order_button">UPLOAD</string>

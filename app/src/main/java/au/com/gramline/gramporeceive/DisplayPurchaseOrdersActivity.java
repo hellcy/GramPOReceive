@@ -200,13 +200,18 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
             qtyReqd.setText(String.valueOf(receivedOrder.ORD_QUANT));
             tableRow.addView(qtyReqd, 3, layoutParams);
 
-            // Add a EditText in the fifth column.
+            // Add a TextView in the fifth column.
+            TextView qtySupd = new TextView(context);
+            qtySupd.setText(String.valueOf(receivedOrder.SUP_QUANT));
+            tableRow.addView(qtySupd, 4, layoutParams);
+
+            // Add a EditText in the sixth column.
             EditText qtyCollected = new EditText(context);
             if (receivedOrder.QTYReceived != null)
             {
                 qtyCollected.setText(String.valueOf(receivedOrder.QTYReceived));
             }
-            tableRow.addView(qtyCollected, 4, layoutParams);
+            tableRow.addView(qtyCollected, 5, layoutParams);
             qtyCollected.setTag("qtyReceived_" + size);
             qtyCollected.setInputType(InputType.TYPE_CLASS_NUMBER);
 
@@ -268,9 +273,15 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
                         tableRow.addView(qtyReqd, 3, layoutParams);
                         orderItem.ORD_QUANT = purchaseOrder.ORD_QUANT.intValue();
 
-                        // Add a EditText in the fifth column.
+                        // Add a TextView in the fifth column.
+                        TextView qtySupd = new TextView(context);
+                        qtySupd.setText(String.valueOf(purchaseOrder.SUP_QUANT));
+                        tableRow.addView(qtySupd, 4, layoutParams);
+                        orderItem.SUP_QUANT = purchaseOrder.SUP_QUANT.intValue();
+
+                        // Add a EditText in the sixth column.
                         EditText qtyCollected = new EditText(context);
-                        tableRow.addView(qtyCollected, 4, layoutParams);
+                        tableRow.addView(qtyCollected, 5, layoutParams);
                         qtyCollected.setTag("qtyReceived_" + size);
                         qtyCollected.setInputType(InputType.TYPE_CLASS_NUMBER);
 
