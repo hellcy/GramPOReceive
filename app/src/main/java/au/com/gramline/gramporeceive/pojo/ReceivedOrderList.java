@@ -19,6 +19,8 @@ public class ReceivedOrderList {
         public Integer HDR_SEQNO;
         @SerializedName("ACCNO")
         public Integer ACCNO;
+        @SerializedName("NAME")
+        public String NAME;
         @SerializedName("STOCKCODE")
         public String STOCKCODE;
         @SerializedName("DESCRIPTION")

@@ -14,6 +14,8 @@ public class PurchaseOrderList {
         public String ORDERDATE;
         @SerializedName("ACCNO")
         public Integer ACCNO;
+        @SerializedName("NAME")
+        public String NAME;
         @SerializedName("HDR_SEQNO")
         public Integer HDR_SEQNO;
         @SerializedName("STOCKCODE")

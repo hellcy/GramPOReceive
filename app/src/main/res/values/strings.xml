@@ -16,6 +16,7 @@
     <string name="save_order_button">SAVE</string>
     <string name="upload_order_button">UPLOAD</string>
     <string name="order_number_label">Order Number: %1$s </string>
+    <string name="account_name_label">Account Name: %1$s </string>
     <string name="account_number_label">Account Number: %1$s </string>
     <string name="order_date_label">Order Date: %1$s </string>
     <string name="you_are_logged_in_as">You are logged in as: </string>

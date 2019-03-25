@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -24,7 +25,7 @@ import retrofit2.Response;
 
 public class EnterPurchaseOrderNumberActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE_THREE = "com.example.GramDispatch.MESSAGE3";
-    public static final String EXTRA_MESSAGE_TWO = "com.example.GramDispatch.MESSAGE2";
+    public static final String RESUME_FLAG = "com.example.GramDispatch.MESSAGE2";
     public static final String MY_PREFS_NAME = "MyPrefsFile";
 
     APIInterface apiInterface;
@@ -32,7 +33,7 @@ public class EnterPurchaseOrderNumberActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        AutoCompleteTextView text;
+        AutoCompleteTextView accountNameText;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_purchase_order_number);
@@ -58,14 +59,12 @@ public class EnterPurchaseOrderNumberActivity extends AppCompatActivity {
                 call.cancel();
             }
         });
-
-        text=(AutoCompleteTextView)findViewById(R.id.autoCompleteTextView1);
-
+        accountNameText = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
         ArrayAdapter adapter = new
                 ArrayAdapter(this,android.R.layout.simple_list_item_1,nameStringList);
 
-        text.setAdapter(adapter);
-        text.setThreshold(1);
+        accountNameText.setAdapter(adapter);
+        accountNameText.setThreshold(1);
 
         // Capture the layout's TextView and set the string as its text
         TextView textView = findViewById(R.id.usernameView);
@@ -79,17 +78,38 @@ public class EnterPurchaseOrderNumberActivity extends AppCompatActivity {
     /** Called when the user taps the get job order button */
     public void sendMessage(View view) {
         Intent intent = new Intent(this, DisplayPurchaseOrdersActivity.class);
-        EditText editText = (EditText) findViewById(R.id.enterOrderNumberText);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE_THREE, message);
-        startActivity(intent);
+        EditText purchaseNumberText = (EditText) findViewById(R.id.enterOrderNumberText);
+        AutoCompleteTextView accountNameText = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
+
+        if (TextUtils.isEmpty(purchaseNumberText.getText()) && TextUtils.isEmpty(accountNameText.getText())) {
+            Toast.makeText(getApplicationContext(), "Please enter purchase number or account name \n", Toast.LENGTH_SHORT).show();
+        }
+        else if (TextUtils.isEmpty(purchaseNumberText.getText()) == false)
+        {
+            String message = purchaseNumberText.getText().toString();
+            intent.putExtra(EXTRA_MESSAGE_THREE, message);
+            startActivity(intent);
+        }
+        else
+        {
+            String message = accountNameText.getText().toString();
+            intent.putExtra(EXTRA_MESSAGE_THREE, message);
+            startActivity(intent);
+        }
     }
 
     /** Called when the user taps the continue order button */
     public void continueOrder(View view) {
         Intent intent = new Intent(this, DisplayPurchaseOrdersActivity.class);
-        EditText editText = (EditText) findViewById(R.id.enterOrderNumberText);
-        String message = editText.getText().toString();
+        EditText purchaseNumberText = (EditText) findViewById(R.id.enterOrderNumberText);
+        AutoCompleteTextView accountNameText = (AutoCompleteTextView)findViewById(R.id.autoCompleteTextView);
+
+        String message = purchaseNumberText.getText().toString();
+        if (TextUtils.isEmpty(purchaseNumberText.getText()) && TextUtils.isEmpty(accountNameText.getText()) == false)
+        {
+            message = accountNameText.getText().toString();
+        }
+
         String resume = "resume";
         File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/GramPOReceive", "order " + message + ".txt");
         if (!file.exists())
@@ -99,7 +119,7 @@ public class EnterPurchaseOrderNumberActivity extends AppCompatActivity {
         else
         {
             intent.putExtra(EXTRA_MESSAGE_THREE, message);
-            intent.putExtra(EXTRA_MESSAGE_TWO, resume);
+            intent.putExtra(RESUME_FLAG, resume);
             startActivity(intent);
         }
     }

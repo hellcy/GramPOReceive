@@ -15,6 +15,10 @@ public interface APIInterface {
     @GET("/Scanner/api/PurchaseOrder/get?")
     Call<PurchaseOrderList> doGetPurchaseOrderList(@Query("HDR_SEQNO") String HDR_SEQNO);
 
+    // get job orders by account name
+    @GET("/Scanner/api/PurchaseOrder/get?")
+    Call<PurchaseOrderList> doGetPurchaseOrderListByName(@Query("ACCNAME") String ACCNAME);
+
     // get account names
     @GET("/Scanner/api/PurchaseOrder/get")
     Call<List<String>> doGetAccountNameList();

@@ -55,28 +55,28 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         size = 0;
         intent = getIntent();
         message = intent.getStringExtra(EnterPurchaseOrderNumberActivity.EXTRA_MESSAGE_THREE);
-        resume = intent.getStringExtra(EnterPurchaseOrderNumberActivity.EXTRA_MESSAGE_TWO);
+        resume = intent.getStringExtra(EnterPurchaseOrderNumberActivity.RESUME_FLAG);
         context = getApplicationContext();
-        if (message.isEmpty())
-        {
-            backToEnterPurchaseOrderNumberActivity();
-            finish();
-            return;
-        }
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
         // Capture the layout's TextView and set the string as its text
-        TextView orderNumber = findViewById(R.id.OrderNumberView);
-        orderNumber.setText(getString(R.string.order_number_label, message));
+        TextView orderNumberOrAccountName = findViewById(R.id.OrderNumberView);
+        if (tryParseInt(message) != null) orderNumberOrAccountName.setText(getString(R.string.order_number_label, message));
+        else if (tryParseInt(message) == null) orderNumberOrAccountName.setText(getString(R.string.account_name_label, message));
 
         if (resume != null)
         {
             savedOrder = getOrderFromFile(savedOrder);
         }
-        else
+        else if (tryParseInt(message) != null)
         {
             getOrderFromDatabase();
+        }
+        else if (tryParseInt(message) == null)
+        {
+            Toast.makeText(getApplicationContext(), "You entered account name \n", Toast.LENGTH_LONG).show();
+            getOrderFromDatabaseByAccountName();
         }
 
         /* When save order button clicked. */
@@ -109,7 +109,15 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         uploadOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<ReceivedOrderList> call1 = apiInterface.createReceivedOrderList(savedOrder);
+                ReceivedOrderList uploadOrder = new ReceivedOrderList();
+                uploadOrder.USERNAME = savedOrder.USERNAME;
+                for (ReceivedOrderList.ReceivedOrder receivedOrder : savedOrder.results) {
+                    if (receivedOrder.QTYReceived != null && receivedOrder.QTYReceived > 0)
+                    {
+                        uploadOrder.results.add(receivedOrder);
+                    }
+                }
+                    Call<ReceivedOrderList> call1 = apiInterface.createReceivedOrderList(uploadOrder);
                 // call and response type have to be the same to get a successful callback
                 call1.enqueue(new Callback<ReceivedOrderList>() {
                     @Override
@@ -288,6 +296,93 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
                         orderItem.ACCNO = purchaseOrder.ACCNO;
                         orderItem.ORDERDATE = purchaseOrder.ORDERDATE;
                         orderItem.HDR_SEQNO = purchaseOrder.HDR_SEQNO;
+                        orderItem.NAME = purchaseOrder.NAME;
+
+                        size++;
+                        savedOrder.results.add(orderItem);
+                        tableLayout.addView(tableRow);
+                    }
+                    TextView accNo = findViewById(R.id.AccNoView);
+                    accNo.setText(getString(R.string.account_number_label, String.valueOf(savedOrder.results.get(0).ACCNO)));
+                    TextView orderDate = findViewById(R.id.OrderDateView);
+                    orderDate.setText(getString(R.string.order_date_label, savedOrder.results.get(0).ORDERDATE));
+                }
+            }
+            @Override
+            public void onFailure (Call < PurchaseOrderList > call, Throwable t){
+                call.cancel();
+            }
+        });
+    }
+
+    public void getOrderFromDatabaseByAccountName()
+    {
+        /**
+         * GET List Resources
+         **/
+        Call<PurchaseOrderList> call = apiInterface.doGetPurchaseOrderListByName(message);
+        call.enqueue(new Callback<PurchaseOrderList>()
+        {
+            @Override
+            public void onResponse (Call < PurchaseOrderList > call, Response< PurchaseOrderList > response){
+
+                Log.d("TAG", response.code() + ""); // success code 200
+
+                PurchaseOrderList resource = response.body();
+                List<PurchaseOrderList.PurchaseOrder> dataList = resource.results;
+                if (dataList.size() == 0)
+                {
+                    backToEnterPurchaseOrderNumberActivity();
+                }
+                else
+                {
+                    for (PurchaseOrderList.PurchaseOrder purchaseOrder : dataList) {
+                        // Create a new table row.
+                        TableRow tableRow = new TableRow(context);
+                        ReceivedOrderList.ReceivedOrder orderItem = new ReceivedOrderList.ReceivedOrder();
+                        // Set new table row layout parameters.
+                        TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 1);
+
+                        // Add a TextView in the first column.
+                        TextView seqNo = new TextView(context);
+                        seqNo.setText(String.valueOf(purchaseOrder.SEQNO));
+                        tableRow.addView(seqNo, 0,layoutParams);
+                        orderItem.SEQNO = purchaseOrder.SEQNO;
+
+                        // Add a TextView in the second column.
+                        TextView stockCode = new TextView(context);
+                        stockCode.setText(String.valueOf(purchaseOrder.STOCKCODE));
+                        tableRow.addView(stockCode, 1,new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 2));
+                        orderItem.STOCKCODE = purchaseOrder.STOCKCODE;
+
+                        // Add a TextView in the third column.
+                        TextView description = new TextView(context);
+                        description.setText(purchaseOrder.DESCRIPTION);
+                        tableRow.addView(description, 2, new TableRow.LayoutParams(0, TableRow.LayoutParams.WRAP_CONTENT, 4));
+                        orderItem.DESCRIPTION = purchaseOrder.DESCRIPTION;
+
+                        // Add a TextView in the fourth column.
+                        TextView qtyReqd = new TextView(context);
+                        qtyReqd.setText(String.valueOf(purchaseOrder.ORD_QUANT));
+                        tableRow.addView(qtyReqd, 3, layoutParams);
+                        orderItem.ORD_QUANT = purchaseOrder.ORD_QUANT.intValue();
+
+                        // Add a TextView in the fifth column.
+                        TextView qtySupd = new TextView(context);
+                        qtySupd.setText(String.valueOf(purchaseOrder.SUP_QUANT));
+                        tableRow.addView(qtySupd, 4, layoutParams);
+                        orderItem.SUP_QUANT = purchaseOrder.SUP_QUANT.intValue();
+
+                        // Add a EditText in the sixth column.
+                        EditText qtyCollected = new EditText(context);
+                        tableRow.addView(qtyCollected, 5, layoutParams);
+                        qtyCollected.setTag("qtyReceived_" + size);
+                        qtyCollected.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+                        orderItem.ACCNO = purchaseOrder.ACCNO;
+                        orderItem.ORDERDATE = purchaseOrder.ORDERDATE;
+                        orderItem.HDR_SEQNO = purchaseOrder.HDR_SEQNO;
+                        orderItem.NAME = purchaseOrder.NAME;
 
                         size++;
                         savedOrder.results.add(orderItem);
@@ -315,5 +410,13 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         toast.show();
         Intent intent = new Intent(context, EnterPurchaseOrderNumberActivity.class);
         startActivity(intent);
+    }
+
+    public static Integer tryParseInt(String someText) {
+        try {
+            return Integer.parseInt(someText);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }
