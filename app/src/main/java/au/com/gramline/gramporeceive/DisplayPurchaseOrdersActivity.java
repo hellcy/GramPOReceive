@@ -1,8 +1,11 @@
 package au.com.gramline.gramporeceive;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +24,8 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.util.List;
 
 import au.com.gramline.gramporeceive.pojo.PurchaseOrderList;
@@ -56,7 +61,7 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         intent = getIntent();
         message = intent.getStringExtra(EnterPurchaseOrderNumberActivity.EXTRA_MESSAGE_THREE);
         resume = intent.getStringExtra(EnterPurchaseOrderNumberActivity.RESUME_FLAG);
-        context = getApplicationContext();
+        context = DisplayPurchaseOrdersActivity.this;
 
         apiInterface = APIClient.getClient().create(APIInterface.class);
 
@@ -135,6 +140,12 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         });
     }
 
+    public void scanFile(Context ctxt, File f, String mimeType) {
+        MediaScannerConnection
+                .scanFile(ctxt, new String[] {f.getAbsolutePath()},
+                        new String[] {mimeType}, null);
+    }
+
     public void writeFileExternalStorage(ReceivedOrderList receivedOrderList) {
 
         //Text of the Document
@@ -150,10 +161,12 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
 
         //Create a new file that points to the root directory, with the given name:
         File path = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/GramPOReceive");
+
         if (!path.mkdirs())
         {
             path.mkdirs();
         }
+
         File file = new File(path, DirName);
         //File file = mapper.writeValue(new File("result.json"), collectedOrder);//Plain JSON
         //commit test
@@ -163,9 +176,11 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
         try {
             //mapper.writeValue(file, collectedOrderList);//Plain JSON
             mapper.writerWithDefaultPrettyPrinter().writeValue(file, receivedOrderList);//Prettified JSON
+            scanFile(context ,file, null);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     public ReceivedOrderList getOrderFromFile(ReceivedOrderList receivedOrderList)
@@ -345,6 +360,7 @@ public class DisplayPurchaseOrdersActivity extends AppCompatActivity {
 
                         // Add a TextView in the first column.
                         TextView seqNo = new TextView(context);
+                        seqNo.setTextColor(Color.BLACK);
                         seqNo.setText(String.valueOf(purchaseOrder.SEQNO));
                         tableRow.addView(seqNo, 0,layoutParams);
                         orderItem.SEQNO = purchaseOrder.SEQNO;
