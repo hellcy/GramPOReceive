@@ -5,7 +5,7 @@
     <string name="enter_password_text">Password</string>
     <string name="enter_purchase_order_number_text">Purchase Order Number</string>
     <string name="enter_account_name_text">Account Name</string>
-    <string name="get_purchase_orders_button">New Purchase Order</string>
+    <string name="get_purchase_orders_button">Load Purchase Order</string>
     <string name="continue_purchase_order_button">Continue Purchase Order</string>
     <string name="sequence_number_header">Seq No</string>
     <string name="stockcode_header">STOCKCODE</string>
